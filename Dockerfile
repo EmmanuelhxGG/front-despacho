@@ -14,8 +14,8 @@ ENV VITE_API_DESPACHOS_URL=$VITE_API_DESPACHOS_URL
 RUN npm run build
 
 FROM nginx:alpine
-# Cambiar el puerto 80 a 8080 porque los usuarios no-root no pueden usar puertos < 1024
-RUN sed -i 's/listen  *80;/listen 8080;/g' /etc/nginx/conf.d/default.conf
+# Copiamos nuestra configuración de Nginx personalizada para React (SPA)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Configurar Nginx para servir SPA de React y hacer proxy a los backends
 RUN echo 'server {
