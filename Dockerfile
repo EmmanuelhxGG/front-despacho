@@ -14,7 +14,7 @@ ENV VITE_API_DESPACHOS_URL=$VITE_API_DESPACHOS_URL
 RUN npm run build
 
 FROM nginx:alpine
-# Copiamos nuestra configuración de Nginx para SPAs
+# Copiamos nuestra configuración de Nginx personalizada para React (SPA)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Ajustar permisos para que el usuario nginx pueda escribir en las carpetas necesarias
