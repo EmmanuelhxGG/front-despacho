@@ -1,30 +1,19 @@
+# Etapa 1: Construcción (Build)
 FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-# Limpieza de capas: usamos npm ci para una instalación limpia y determinista
-RUN npm ci
+RUN npm install
 COPY . .
-
-# Inyección de variables en tiempo de compilación (CI/CD)
-ARG VITE_API_VENTAS_URL
-ARG VITE_API_DESPACHOS_URL
-ENV VITE_API_VENTAS_URL=$VITE_API_VENTAS_URL
-ENV VITE_API_DESPACHOS_URL=$VITE_API_DESPACHOS_URL
-
 RUN npm run build
 
+# Etapa 2: Servidor de producción con Nginx
 FROM nginx:alpine
-# Copiamos nuestra configuración de Nginx personalizada para React (SPA)
+# Copiar configuración personalizada si existe, o usar la de defecto
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Ajustar permisos para que el usuario nginx pueda escribir en las carpetas necesarias
-RUN chown -R nginx:nginx /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d \
-    && touch /var/run/nginx.pid \
-    && chown -R nginx:nginx /var/run/nginx.pid
+# Limpiar y copiar archivos construidos
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Usar el usuario 'nginx' sin privilegios de root
-USER nginx
-
-COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
-EXPOSE 8080
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
