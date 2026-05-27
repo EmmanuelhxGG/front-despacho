@@ -45,5 +45,5 @@ jobs:
               'docker pull ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest',
               'docker stop frontend-innovatech || true',
               'docker rm frontend-innovatech || true',
-              'docker run -d --name frontend-innovatech -p 80:80 ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest'
+              'docker run -d --name frontend-innovatech -p 80:8080 ${{ secrets.ECR_REPO_URL_FRONTEND }}:latest'
             ]"
